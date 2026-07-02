@@ -1,0 +1,91 @@
+{
+  "iteration_index": 1,
+  "case_id": "demo_001",
+  "boundary_conditions": {
+    "inlet": {
+      "type": "velocity_inlet",
+      "velocity_m_s": 2.0,
+      "temperature_c": 45,
+      "turbulence_intensity": 0.05
+    },
+    "outlet": {
+      "type": "pressure_outlet",
+      "gauge_pressure_pa": 0
+    },
+    "walls": {
+      "type": "wall",
+      "thermal_condition": "adiabatic"
+    },
+    "heat_sources": [
+      {
+        "name": "chip_heat_source",
+        "power_w": 80,
+        "type": "constant_power"
+      }
+    ]
+  },
+  "materials": {
+    "solid": {
+      "heatsink": {
+        "material": "aluminum_6061",
+        "density_kg_m3": 2700,
+        "specific_heat_j_kg_k": 900,
+        "thermal_conductivity_w_m_k": 205
+      },
+      "chip": {
+        "material": "silicon",
+        "density_kg_m3": 2330,
+        "specific_heat_j_kg_k": 700,
+        "thermal_conductivity_w_m_k": 148
+      }
+    },
+    "fluid": {
+      "air": {
+        "material": "air",
+        "density_kg_m3": 1.225,
+        "specific_heat_j_kg_k": 1006,
+        "thermal_conductivity_w_m_k": 0.025,
+        "viscosity_kg_m_s": 1.789e-05
+      }
+    }
+  },
+  "solver_settings": {
+    "solver_type": "pressure_based",
+    "time_formulation": "steady",
+    "velocity_formulation": "absolute",
+    "gradient_scheme": "least_squares_cell_based",
+    "pressure_discretization": "second_order",
+    "momentum_discretization": "second_order_upwind",
+    "energy_discretization": "second_order_upwind",
+    "turbulence_model": "k-epsilon",
+    "radiation_model": "surface_to_surface",
+    "gravity": {
+      "enabled": false,
+      "vector": [
+        0,
+        0,
+        -9.81
+      ]
+    }
+  },
+  "convergence_criteria": {
+    "energy_residual": 1e-06,
+    "velocity_residual": 0.0001,
+    "temperature_monitor_max": 95.0
+  },
+  "mesh_settings": {
+    "global_max_size_mm": 5.0,
+    "global_min_size_mm": 0.5,
+    "growth_rate": 1.2,
+    "fin_cross_section_min_cells": 2,
+    "boundary_layer_layers": 5,
+    "boundary_layer_first_height_mm": 0.1
+  },
+  "named_selections": [
+    "inlet",
+    "outlet",
+    "chip_heat_source",
+    "heatsink",
+    "fluid_domain"
+  ]
+}

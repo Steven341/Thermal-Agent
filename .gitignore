@@ -1,0 +1,33 @@
+```
+# Build artifacts and temporary files
+*.pyc
+__pycache__/
+*.tmp
+*.log
+
+# Dependencies
+.venv/
+venv/
+node_modules/
+
+# Editors
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.local
+*.env.*
+
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+```

@@ -24,7 +24,7 @@
   },
   "warning": "Mock result only. Replace with Fluent journal/PyFluent worker later.",
   "images": [
-    "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/results/temperature_iter_001.png",
-    "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/results/residuals_iter_001.png"
+    "/workspace/cases/demo_001/results/temperature_iter_001.png",
+    "/workspace/cases/demo_001/results/residuals_iter_001.png"
   ]
 }

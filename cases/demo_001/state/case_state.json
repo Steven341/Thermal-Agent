@@ -4,7 +4,7 @@
   "current_stage": "report_generated",
   "iteration_index": 1,
   "last_tool": "generate_report",
-  "next_tool": null,
+  "next_tool": "generate_report",
   "approvals": [
     {
       "tool": "execute_cleanup",
@@ -33,11 +33,42 @@
       "approver": "engineer",
       "reason": "",
       "timestamp": "2026-07-02T07:23:36.969583+00:00"
+    },
+    {
+      "type": "execute_cleanup",
+      "approved": "approved",
+      "details": "engineer"
+    },
+    {
+      "type": "apply_optimization_plan",
+      "approved": "approved",
+      "details": "engineer"
+    },
+    {
+      "type": "execute_cleanup",
+      "approved": "approved",
+      "details": "engineer"
+    },
+    {
+      "type": "apply_optimization_plan",
+      "approved": "approved",
+      "details": "engineer"
+    },
+    {
+      "type": "execute_cleanup",
+      "approved": "approved",
+      "details": "engineer"
+    },
+    {
+      "type": "apply_optimization_plan",
+      "approved": "approved",
+      "details": "engineer"
     }
   ],
   "artifacts": {
     "requirements": "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/work/requirements.json"
   },
   "errors": [],
-  "updated_at": "2026-07-02T07:23:37.343477+00:00"
+  "updated_at": "2026-07-02T07:23:37.343477+00:00",
+  "iteration": 1
 }
