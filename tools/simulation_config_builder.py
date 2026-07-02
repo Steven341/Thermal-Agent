@@ -118,7 +118,10 @@ def build_simulation_config(project_root: Path, case_id: str, iteration_index: i
     
     # 保存配置
     out = cp / "work" / f"simulation_config_iter{iteration_index:03d}.json"
+    iter_out = cp / "iterations" / f"iter_{iteration_index:03d}" / "simulation_config.json"
     save_json(out, config)
+    save_json(iter_out, config)
+    save_json(cp / "work" / "simulation_config.json", config)
     
     update_state(project_root, case_id, current_stage=f"simulation_config_built_iter{iteration_index:03d}", last_tool="build_simulation_config", next_tool="run_solver")
     log_decision(project_root, case_id, "ai", "simulation_config_built", {"path": str(out), "iteration": iteration_index})

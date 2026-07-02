@@ -14,6 +14,8 @@ def ensure_case_dirs(project_root: Path, case_id: str) -> None:
         cp / "report",
         cp / "mesh",
         cp / "results",
+        cp / "work",
+        cp / "iterations",
     ]
     for d in dirs:
         d.mkdir(parents=True, exist_ok=True)

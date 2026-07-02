@@ -26,6 +26,35 @@ python run_pipeline.py
 
 所以没有 Qwen key、没有 Ansys 也能跑通闭环。
 
+## 真实 Ansys 部署替换点
+
+当前求解器通过 `tools/solver_worker.py` 统一入口选择后端：
+
+- `MOCK_ANSYS=true`：调用 `tools/solver_worker_mock.py`，用于本地 smoke test。
+- `MOCK_ANSYS=false`：调用 `tools/solver_worker_ansys.py`，把 `work/simulation_config_iterXXX.json` 交给真实 Ansys 自动化脚本。
+
+真实环境需要在 `.env` 中配置：
+
+```env
+MOCK_ANSYS=false
+ANSYS_SOLVER_COMMAND=/path/to/run_ansys_solver.py
+ANSYS_SOLVER_TIMEOUT_SECONDS=7200
+```
+
+`ANSYS_SOLVER_COMMAND` 指向的脚本需要接收：
+
+```text
+--project-root <repo>
+--case-id <case_id>
+--iteration-index <i>
+--config <cases/<case_id>/work/simulation_config_iterXXX.json>
+--output <cases/<case_id>/results/solver_result_iterXXX.json>
+```
+
+并输出与 `tools/solver_worker_mock.py` 相同结构的 `solver_result_iterXXX.json`，后续 `postprocess.py`、`result_evaluator.py`、`optimization_planner.py` 就能继续复用。
+
+注意：几何清理目前仍是受控规则计划 + mock 执行（复制 STEP），真实 CAD/SpaceClaim 清理应优先替换 `tools/geometry_cleanup_executor.py`；Ansys 网格/求解替换点是 `tools/solver_worker_ansys.py`。
+
 ## 使用 Qwen API
 
 编辑 `.env`：
