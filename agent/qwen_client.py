@@ -1,8 +1,10 @@
 import os
 import re
 import json
+import time
 from typing import Any, Dict
 import requests
+from agent.prompts import SYSTEM_PROMPT, REQUIREMENT_EXTRACTION_PROMPT, OPTIMIZATION_PLAN_PROMPT
 
 
 class QwenClient:
@@ -11,6 +13,8 @@ class QwenClient:
         self.base_url = os.getenv("QWEN_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1").strip()
         self.model = os.getenv("QWEN_MODEL", "qwen-max").strip()
         self.demo_mode = os.getenv("DEMO_MODE", "true").lower() == "true"
+        self.timeout_seconds = float(os.getenv("QWEN_TIMEOUT_SECONDS", "60"))
+        self.max_retries = int(os.getenv("QWEN_MAX_RETRIES", "2"))
 
     def test_connection(self) -> Dict[str, Any]:
         if self._use_mock():
@@ -20,33 +24,13 @@ class QwenClient:
     def parse_requirement(self, text: str) -> Dict[str, Any]:
         if self._use_mock():
             return self._mock_parse_requirement(text)
-        prompt = f"""
-把下面热仿真需求抽取为严格 JSON，只输出 JSON。
-字段：
-ambient_temperature_c, heat_source_power_w, inlet_velocity_m_s,
-max_allowed_temperature_c, material_hint, product_type, simulation_goal,
-missing_fields, requires_review。
-
-需求：
-{text}
-"""
+        prompt = REQUIREMENT_EXTRACTION_PROMPT.format(requirement_text=text)
         return self.chat_json(prompt)
 
     def make_optimization_plan(self, context: Dict[str, Any]) -> Dict[str, Any]:
         if self._use_mock():
             return self._mock_optimization_plan(context)
-        prompt = f"""
-你是受控热仿真优化 Agent。根据 optimization_context 生成严格 JSON。
-必须遵守：
-1. 只能使用 optimization_rules.design_levers 里的参数。
-2. 不能超过 min/max/allowed_values。
-3. 涉及几何、材料的改动必须 requires_review=true。
-4. 输出必须包含 diagnosis, changes, risk_level, requires_review, expected_effect, recommended_next_tool。
-5. 不要输出解释文字，只输出 JSON。
-
-optimization_context:
-{json.dumps(context, ensure_ascii=False)}
-"""
+        prompt = OPTIMIZATION_PLAN_PROMPT.format(optimization_context=json.dumps(context, ensure_ascii=False))
         return self.chat_json(prompt)
 
     def chat_json(self, prompt: str) -> Dict[str, Any]:
@@ -56,21 +40,30 @@ optimization_context:
         payload = {
             "model": self.model,
             "messages": [
-                {"role": "system", "content": "You output strict JSON only."},
+                {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt}
             ],
-            "temperature": 0.1
+            "temperature": float(os.getenv("QWEN_TEMPERATURE", "0.1"))
         }
-        resp = requests.post(
-            url,
-            headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
-            json=payload,
-            timeout=60
-        )
-        if resp.status_code != 200:
-            raise RuntimeError(f"Qwen API error: {resp.status_code} {resp.text}")
-        content = resp.json()["choices"][0]["message"]["content"]
-        return self._json_from_text(content)
+        last_error = None
+        for attempt in range(self.max_retries + 1):
+            try:
+                resp = requests.post(
+                    url,
+                    headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
+                    json=payload,
+                    timeout=self.timeout_seconds
+                )
+                if resp.status_code != 200:
+                    raise RuntimeError(f"Qwen API error: {resp.status_code} {resp.text}")
+                content = resp.json()["choices"][0]["message"]["content"]
+                return self._json_from_text(content)
+            except (requests.RequestException, KeyError, ValueError, RuntimeError) as exc:
+                last_error = exc
+                if attempt >= self.max_retries:
+                    break
+                time.sleep(min(2 ** attempt, 5))
+        raise RuntimeError(f"Qwen JSON call failed after retries: {last_error}")
 
     def _json_from_text(self, text: str) -> Dict[str, Any]:
         try:

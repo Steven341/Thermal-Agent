@@ -24,7 +24,7 @@ def apply_optimization_plan(project_root: Path, case_id: str, from_iteration: in
         if param == "inlet_velocity_m_s":
             new_config["boundary_conditions"]["inlet"]["velocity_m_s"] = new_value
         elif param == "heatsink_material":
-            new_config["materials"]["heatsink"]["name"] = new_value
+            new_config["materials"]["solid"]["heatsink"]["material"] = new_value
         else:
             new_config["design_variables"][param] = new_value
         applied.append(ch)
@@ -32,10 +32,11 @@ def apply_optimization_plan(project_root: Path, case_id: str, from_iteration: in
     new_config["iteration_index"] = to_iteration
     dst_dir = cp / "iterations" / f"iter_{to_iteration:03d}"
     save_json(dst_dir / "simulation_config.json", new_config)
+    save_json(cp / "work" / f"simulation_config_iter{to_iteration:03d}.json", new_config)
     save_json(cp / "work" / "simulation_config.json", new_config)
 
     if plan.get("requires_review"):
-        add_approval(project_root, case_id, "apply_optimization_plan", "approved", approver)
+        add_approval(project_root, case_id, "apply_optimization_plan", True, {"approver": approver})
 
     result = {"status": "success", "from_iteration": from_iteration, "to_iteration": to_iteration, "applied_changes": applied, "new_config": new_config}
     save_json(dst_dir / "config_modifier_result.json", result)
