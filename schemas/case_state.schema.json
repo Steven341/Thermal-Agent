@@ -1,0 +1,10 @@
+{
+  "case_id": "string",
+  "current_stage": "string",
+  "iteration_index": "integer",
+  "status": "created | running | waiting_for_approval | failed | completed",
+  "last_tool": "string",
+  "next_tool": "string",
+  "approvals": "array",
+  "artifacts": "object"
+}

@@ -1,0 +1,29 @@
+{
+  "version": "2026-07-02.v1",
+  "steady_state_thermal": {
+    "residual_target": 1e-05,
+    "max_iterations": 500,
+    "energy_imbalance_max_percent": 3.0
+  },
+  "failure_classification": {
+    "solver_crashed": [
+      "floating point exception",
+      "negative cell volume",
+      "license checkout failed"
+    ],
+    "bad_mesh": [
+      "negative cell volume",
+      "high skewness",
+      "poor orthogonal quality"
+    ],
+    "missing_boundary": [
+      "zone not found",
+      "named selection not found",
+      "boundary condition missing"
+    ],
+    "not_converged": [
+      "residual not converged",
+      "maximum iterations reached"
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "status": "converged",
+  "solver": "mock_fluent_cht",
+  "converged": true,
+  "max_temperature_c": 84.5,
+  "target_max_temperature_c": 95.0,
+  "passed": true,
+  "chip_max_temperature_c": 84.5,
+  "heatsink_base_max_temperature_c": 79.5,
+  "fin_root_avg_temperature_c": 69.5,
+  "fin_tip_avg_temperature_c": 46.5,
+  "outlet_air_temperature_c": 47.67,
+  "pressure_drop_pa": 35.0,
+  "residual_final": {
+    "energy": 8e-07,
+    "continuity": 3e-05,
+    "momentum": 5e-05
+  },
+  "mesh_quality": {
+    "minimum_orthogonal_quality": 0.22,
+    "maximum_skewness": 0.72,
+    "maximum_aspect_ratio": 20,
+    "passed": true
+  },
+  "warning": "Mock result only. Replace with Fluent journal/PyFluent worker later.",
+  "images": [
+    "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/results/temperature_iter_001.png",
+    "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/results/residuals_iter_001.png"
+  ]
+}

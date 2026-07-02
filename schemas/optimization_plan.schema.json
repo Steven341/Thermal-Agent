@@ -1,0 +1,7 @@
+{
+  "diagnosis": "string",
+  "changes": "array",
+  "risk_level": "low | medium | high",
+  "requires_review": "boolean",
+  "expected_effect": "object"
+}

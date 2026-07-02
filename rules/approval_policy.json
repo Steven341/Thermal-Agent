@@ -1,0 +1,30 @@
+{
+  "version": "2026-07-02.v1",
+  "tools_require_approval": [
+    "execute_cleanup",
+    "run_solver",
+    "apply_optimization_plan",
+    "modify_geometry",
+    "change_material"
+  ],
+  "auto_allowed_if_low_risk": [
+    "parse_requirement",
+    "inspect_geometry",
+    "generate_cleanup_plan",
+    "geometry_health_check",
+    "build_simulation_config",
+    "extract_results",
+    "evaluate_result",
+    "build_optimization_context",
+    "generate_report"
+  ],
+  "approval_record_fields": [
+    "case_id",
+    "tool",
+    "decision",
+    "approver",
+    "timestamp",
+    "diff",
+    "reason"
+  ]
+}

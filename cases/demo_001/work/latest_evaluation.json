@@ -1,0 +1,7 @@
+{
+  "evaluation": "passed",
+  "passed": true,
+  "reason": "target satisfied",
+  "recommended_next_tool": "generate_report",
+  "requires_review": false
+}

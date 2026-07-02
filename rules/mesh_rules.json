@@ -1,0 +1,23 @@
+{
+  "version": "2026-07-02.v1",
+  "purpose": "网格策略与质量阈值",
+  "global_size_mm": 3.0,
+  "critical_regions": {
+    "fin": {
+      "min_cross_section_cells": 2,
+      "local_size_formula": "fin_thickness_mm / min_cross_section_cells"
+    },
+    "heat_source": {
+      "local_size_mm": 0.5
+    },
+    "contact_region": {
+      "refinement": true
+    }
+  },
+  "quality_thresholds": {
+    "minimum_orthogonal_quality": 0.1,
+    "maximum_skewness": 0.95,
+    "maximum_aspect_ratio": 100
+  },
+  "requires_human_approval": true
+}

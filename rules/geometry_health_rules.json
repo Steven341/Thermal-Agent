@@ -1,0 +1,22 @@
+{
+  "version": "2026-07-02.v1",
+  "purpose": "几何清理后的健康检查关卡",
+  "checks": {
+    "clean_model_file_exists": true,
+    "watertight_required": true,
+    "self_intersection_allowed": false,
+    "volume_change_ratio_limit": 0.15,
+    "required_named_selections": [
+      "inlet",
+      "outlet",
+      "chip_heat_source",
+      "heatsink",
+      "fluid_domain"
+    ]
+  },
+  "on_fail": {
+    "action": "rollback_to_original_model",
+    "write_failure_pattern": true,
+    "block_next_step": true
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "status": "success",
+  "clean_model_path": "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/work/clean_model.step",
+  "mock": true,
+  "deleted_parts_count": 1,
+  "filled_holes_count": 2,
+  "removed_fillets_count": 2
+}

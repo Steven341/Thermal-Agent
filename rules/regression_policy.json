@@ -1,0 +1,10 @@
+{
+  "version": "2026-07-02.v1",
+  "purpose": "规则库改动前后的历史 case 回归测试策略",
+  "baseline_cases_dir": "data/regression_cases",
+  "pass_criteria": {
+    "previously_passed_cases_must_still_pass": true,
+    "max_temperature_degradation_allowed_c": 1.0,
+    "no_new_solver_failed": true
+  }
+}

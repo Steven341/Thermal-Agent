@@ -1,0 +1,9 @@
+{
+  "evaluation": "design_failed",
+  "passed": false,
+  "reason": "max_temperature_exceeds_target",
+  "max_temperature_c": 104.5,
+  "target_max_temperature_c": 95.0,
+  "recommended_next_tool": "optimization_planner",
+  "requires_review": true
+}

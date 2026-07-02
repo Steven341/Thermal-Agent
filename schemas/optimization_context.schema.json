@@ -1,0 +1,10 @@
+{
+  "requirements": "object",
+  "geometry_summary": "object",
+  "current_config": "object",
+  "current_result": "object",
+  "evaluation": "object",
+  "optimization_rules": "object",
+  "similar_cases": "array",
+  "previous_iterations": "array"
+}

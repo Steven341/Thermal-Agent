@@ -1,0 +1,425 @@
+{
+  "case_id": "demo_001",
+  "iteration_index": 0,
+  "requirements": {
+    "ambient_temperature_c": 45.0,
+    "heat_source_power_w": 80.0,
+    "inlet_velocity_m_s": 2.0,
+    "max_allowed_temperature_c": 95.0,
+    "material_hint": "铝合金",
+    "product_type": "plate_fin_heatsink",
+    "simulation_goal": "max temperature <= 95.0 C",
+    "missing_fields": [],
+    "requires_review": true
+  },
+  "geometry_summary": {
+    "model_path": "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/input/model.step",
+    "geometry_type": "plate_fin_heatsink_mock",
+    "parts": [
+      {
+        "name": "Heatsink_Base",
+        "bbox_mm": [
+          80,
+          40,
+          5
+        ],
+        "type_guess": "heatsink_base",
+        "thermal_importance": "high"
+      },
+      {
+        "name": "Fin_Array",
+        "bbox_mm": [
+          80,
+          40,
+          18
+        ],
+        "type_guess": "heatsink_fin",
+        "thermal_importance": "high",
+        "fin_count": 24,
+        "fin_height_mm": 18,
+        "fin_thickness_mm": 1.2,
+        "fin_spacing_mm": 1.5
+      },
+      {
+        "name": "Chip_Heat_Source",
+        "bbox_mm": [
+          20,
+          20,
+          1
+        ],
+        "type_guess": "heat_source",
+        "thermal_importance": "high"
+      },
+      {
+        "name": "GB_M3_Screw",
+        "bbox_mm": [
+          1.8,
+          1.8,
+          4
+        ],
+        "type_guess": "fastener",
+        "thermal_importance": "low"
+      }
+    ],
+    "holes": [
+      {
+        "hole_id": "H001",
+        "diameter_mm": 3.0
+      },
+      {
+        "hole_id": "H002",
+        "diameter_mm": 4.5
+      }
+    ],
+    "fillets": [
+      {
+        "edge_id": "F001",
+        "radius_mm": 0.5
+      },
+      {
+        "edge_id": "F002",
+        "radius_mm": 0.8
+      }
+    ],
+    "named_selections_found": [
+      "inlet",
+      "outlet",
+      "chip_heat_source",
+      "heatsink",
+      "fluid_domain"
+    ],
+    "named_selections_missing": [],
+    "health_mock": {
+      "watertight": true,
+      "self_intersections": 0,
+      "volume_mm3": 28450
+    }
+  },
+  "current_config": {
+    "case_id": "demo_001",
+    "iteration_index": 0,
+    "solver": "fluent_cht",
+    "analysis_type": "steady_state",
+    "geometry_file": "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/work/clean_model.step",
+    "materials": {
+      "heatsink": {
+        "name": "Aluminum 6063",
+        "aliases": [
+          "铝合金",
+          "aluminum alloy",
+          "aluminium",
+          "aluminum"
+        ],
+        "thermal_conductivity_w_mk": 201,
+        "density_kg_m3": 2700,
+        "specific_heat_j_kgk": 900,
+        "source": "internal_default_placeholder",
+        "requires_review": true
+      },
+      "fluid": {
+        "name": "Air",
+        "aliases": [
+          "空气",
+          "air"
+        ],
+        "thermal_conductivity_w_mk": 0.026,
+        "density_kg_m3": 1.184,
+        "specific_heat_j_kgk": 1006,
+        "source": "internal_default_placeholder",
+        "requires_review": false
+      }
+    },
+    "boundary_conditions": {
+      "heat_source": {
+        "type": "total_power",
+        "power_w": 80.0,
+        "target_named_selection": "chip_heat_source"
+      },
+      "inlet": {
+        "type": "velocity_inlet",
+        "velocity_m_s": 2.0,
+        "temperature_c": 45.0,
+        "target_named_selection": "inlet"
+      },
+      "outlet": {
+        "type": "pressure_outlet",
+        "gauge_pressure_pa": 0,
+        "target_named_selection": "outlet"
+      }
+    },
+    "mesh_rules": {
+      "global_size_mm": 3.0,
+      "fin_local_size_mm": 0.6,
+      "heat_source_local_size_mm": 0.5,
+      "quality_thresholds": {
+        "minimum_orthogonal_quality": 0.1,
+        "maximum_skewness": 0.95,
+        "maximum_aspect_ratio": 100
+      }
+    },
+    "design_variables": {
+      "fin_height_mm": 18,
+      "fin_thickness_mm": 1.2,
+      "fin_spacing_mm": 1.5,
+      "base_thickness_mm": 5.0
+    },
+    "solver_settings": {
+      "max_iterations": 500,
+      "residual_target": 1e-05
+    },
+    "success_criteria": {
+      "max_temperature_c": 95.0
+    },
+    "requires_review": true
+  },
+  "current_result": {
+    "status": "converged",
+    "solver": "mock_fluent_cht",
+    "converged": true,
+    "max_temperature_c": 104.5,
+    "target_max_temperature_c": 95.0,
+    "passed": false,
+    "chip_max_temperature_c": 104.5,
+    "heatsink_base_max_temperature_c": 99.5,
+    "fin_root_avg_temperature_c": 89.5,
+    "fin_tip_avg_temperature_c": 66.5,
+    "outlet_air_temperature_c": 47.67,
+    "pressure_drop_pa": 29.0,
+    "residual_final": {
+      "energy": 8e-07,
+      "continuity": 3e-05,
+      "momentum": 5e-05
+    },
+    "mesh_quality": {
+      "minimum_orthogonal_quality": 0.22,
+      "maximum_skewness": 0.72,
+      "maximum_aspect_ratio": 20,
+      "passed": true
+    },
+    "warning": "Mock result only. Replace with Fluent journal/PyFluent worker later.",
+    "images": [
+      "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/results/temperature_iter_000.png",
+      "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/results/residuals_iter_000.png"
+    ]
+  },
+  "evaluation": {
+    "evaluation": "design_failed",
+    "passed": false,
+    "reason": "max_temperature_exceeds_target",
+    "max_temperature_c": 104.5,
+    "target_max_temperature_c": 95.0,
+    "recommended_next_tool": "optimization_planner",
+    "requires_review": true
+  },
+  "optimization_rules": {
+    "version": "2026-07-02.v1",
+    "purpose": "AI 改方案时能动的杠杆、范围、权限和优先级",
+    "global_limits": {
+      "max_iterations_per_case": 5,
+      "minimum_meaningful_temperature_improvement_c": 0.5,
+      "stop_if_improvement_less_than_c_for_n_rounds": {
+        "delta_c": 0.5,
+        "rounds": 2
+      }
+    },
+    "design_levers": {
+      "inlet_velocity_m_s": {
+        "type": "boundary_condition",
+        "current_default": 2.0,
+        "min": 1.0,
+        "max": 3.0,
+        "step": 0.5,
+        "auto_apply": true,
+        "requires_approval": false,
+        "cost_penalty": "medium",
+        "risk": "low",
+        "when_to_try": [
+          "design_failed_temperature_too_high",
+          "pressure_drop_pa_not_high"
+        ]
+      },
+      "fin_height_mm": {
+        "type": "geometry_parameter",
+        "current_default": 18.0,
+        "min": 12.0,
+        "max": 25.0,
+        "step": 1.0,
+        "auto_apply": false,
+        "requires_approval": true,
+        "cost_penalty": "medium",
+        "risk": "medium",
+        "when_to_try": [
+          "hotspot_on_chip",
+          "fin_tip_not_hot",
+          "space_available"
+        ]
+      },
+      "fin_spacing_mm": {
+        "type": "geometry_parameter",
+        "current_default": 1.5,
+        "min": 1.2,
+        "max": 3.0,
+        "step": 0.1,
+        "auto_apply": false,
+        "requires_approval": true,
+        "cost_penalty": "low",
+        "risk": "medium",
+        "when_to_try": [
+          "pressure_drop_high",
+          "airflow_blocked"
+        ]
+      },
+      "base_thickness_mm": {
+        "type": "geometry_parameter",
+        "current_default": 5.0,
+        "min": 4.0,
+        "max": 8.0,
+        "step": 0.5,
+        "auto_apply": false,
+        "requires_approval": true,
+        "cost_penalty": "medium",
+        "risk": "medium",
+        "when_to_try": [
+          "chip_hot_base_much_cooler",
+          "spreading_resistance_suspected"
+        ]
+      },
+      "heatsink_material": {
+        "type": "material",
+        "allowed_values": [
+          "Aluminum 6063",
+          "Copper C1100"
+        ],
+        "auto_apply": false,
+        "requires_approval": true,
+        "cost_penalty": "high",
+        "risk": "high",
+        "when_to_try": [
+          "temperature_far_above_target",
+          "geometry_locked"
+        ]
+      }
+    },
+    "diagnosis_rules": [
+      {
+        "name": "chip_to_sink_bottleneck",
+        "if": {
+          "chip_minus_base_temp_c_greater_than": 8,
+          "fin_tip_much_cooler_than_base_c_greater_than": 20
+        },
+        "prefer_levers": [
+          "base_thickness_mm",
+          "heatsink_material"
+        ]
+      },
+      {
+        "name": "air_side_bottleneck",
+        "if": {
+          "outlet_air_temperature_high": true,
+          "pressure_drop_not_high": true
+        },
+        "prefer_levers": [
+          "inlet_velocity_m_s",
+          "fin_height_mm"
+        ]
+      }
+    ]
+  },
+  "material_database": {
+    "version": "2026-07-02.v1",
+    "materials": [
+      {
+        "name": "Aluminum 6063",
+        "aliases": [
+          "铝合金",
+          "aluminum alloy",
+          "aluminium",
+          "aluminum"
+        ],
+        "thermal_conductivity_w_mk": 201,
+        "density_kg_m3": 2700,
+        "specific_heat_j_kgk": 900,
+        "source": "internal_default_placeholder",
+        "requires_review": true
+      },
+      {
+        "name": "Copper C1100",
+        "aliases": [
+          "铜",
+          "copper"
+        ],
+        "thermal_conductivity_w_mk": 385,
+        "density_kg_m3": 8960,
+        "specific_heat_j_kgk": 385,
+        "source": "internal_default_placeholder",
+        "requires_review": true
+      },
+      {
+        "name": "Air",
+        "aliases": [
+          "空气",
+          "air"
+        ],
+        "thermal_conductivity_w_mk": 0.026,
+        "density_kg_m3": 1.184,
+        "specific_heat_j_kgk": 1006,
+        "source": "internal_default_placeholder",
+        "requires_review": false
+      },
+      {
+        "name": "TIM_3W_mK",
+        "aliases": [
+          "thermal pad",
+          "导热垫",
+          "tim"
+        ],
+        "thermal_conductivity_w_mk": 3.0,
+        "source": "internal_default_placeholder",
+        "requires_review": true
+      }
+    ],
+    "material_selection_rules": [
+      {
+        "if_customer_says": "铝合金",
+        "default_candidate": "Aluminum 6063",
+        "requires_review": true,
+        "reason": "客户未给具体牌号时只能选候选，不能当最终事实"
+      }
+    ]
+  },
+  "previous_iterations": [],
+  "similar_cases": [
+    {
+      "score": 5.0,
+      "case_id": "historical_demo_001",
+      "product_type": "plate_fin_heatsink",
+      "requirements": {
+        "heat_source_power_w": 80,
+        "ambient_temperature_c": 45,
+        "inlet_velocity_m_s": 2,
+        "target": 95
+      },
+      "geometry_features": {
+        "fin_height_mm": 18,
+        "fin_spacing_mm": 1.5,
+        "base_thickness_mm": 5
+      },
+      "final_result": {
+        "max_temperature_c": 91,
+        "passed": true
+      },
+      "effective_changes": [
+        {
+          "parameter": "fin_height_mm",
+          "old": 18,
+          "new": 22
+        }
+      ],
+      "tags": [
+        "forced_air",
+        "single_heat_source",
+        "aluminum"
+      ]
+    }
+  ]
+}

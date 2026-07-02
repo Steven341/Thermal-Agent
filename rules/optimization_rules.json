@@ -1,0 +1,114 @@
+{
+  "version": "2026-07-02.v1",
+  "purpose": "AI 改方案时能动的杠杆、范围、权限和优先级",
+  "global_limits": {
+    "max_iterations_per_case": 5,
+    "minimum_meaningful_temperature_improvement_c": 0.5,
+    "stop_if_improvement_less_than_c_for_n_rounds": {
+      "delta_c": 0.5,
+      "rounds": 2
+    }
+  },
+  "design_levers": {
+    "inlet_velocity_m_s": {
+      "type": "boundary_condition",
+      "current_default": 2.0,
+      "min": 1.0,
+      "max": 3.0,
+      "step": 0.5,
+      "auto_apply": true,
+      "requires_approval": false,
+      "cost_penalty": "medium",
+      "risk": "low",
+      "when_to_try": [
+        "design_failed_temperature_too_high",
+        "pressure_drop_pa_not_high"
+      ]
+    },
+    "fin_height_mm": {
+      "type": "geometry_parameter",
+      "current_default": 18.0,
+      "min": 12.0,
+      "max": 25.0,
+      "step": 1.0,
+      "auto_apply": false,
+      "requires_approval": true,
+      "cost_penalty": "medium",
+      "risk": "medium",
+      "when_to_try": [
+        "hotspot_on_chip",
+        "fin_tip_not_hot",
+        "space_available"
+      ]
+    },
+    "fin_spacing_mm": {
+      "type": "geometry_parameter",
+      "current_default": 1.5,
+      "min": 1.2,
+      "max": 3.0,
+      "step": 0.1,
+      "auto_apply": false,
+      "requires_approval": true,
+      "cost_penalty": "low",
+      "risk": "medium",
+      "when_to_try": [
+        "pressure_drop_high",
+        "airflow_blocked"
+      ]
+    },
+    "base_thickness_mm": {
+      "type": "geometry_parameter",
+      "current_default": 5.0,
+      "min": 4.0,
+      "max": 8.0,
+      "step": 0.5,
+      "auto_apply": false,
+      "requires_approval": true,
+      "cost_penalty": "medium",
+      "risk": "medium",
+      "when_to_try": [
+        "chip_hot_base_much_cooler",
+        "spreading_resistance_suspected"
+      ]
+    },
+    "heatsink_material": {
+      "type": "material",
+      "allowed_values": [
+        "Aluminum 6063",
+        "Copper C1100"
+      ],
+      "auto_apply": false,
+      "requires_approval": true,
+      "cost_penalty": "high",
+      "risk": "high",
+      "when_to_try": [
+        "temperature_far_above_target",
+        "geometry_locked"
+      ]
+    }
+  },
+  "diagnosis_rules": [
+    {
+      "name": "chip_to_sink_bottleneck",
+      "if": {
+        "chip_minus_base_temp_c_greater_than": 8,
+        "fin_tip_much_cooler_than_base_c_greater_than": 20
+      },
+      "prefer_levers": [
+        "base_thickness_mm",
+        "heatsink_material"
+      ]
+    },
+    {
+      "name": "air_side_bottleneck",
+      "if": {
+        "outlet_air_temperature_high": true,
+        "pressure_drop_not_high": true
+      },
+      "prefer_levers": [
+        "inlet_velocity_m_s",
+        "fin_height_mm"
+      ]
+    }
+  ]
+}

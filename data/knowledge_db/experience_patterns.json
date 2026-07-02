@@ -1,0 +1,19 @@
+{
+  "patterns": [
+    {
+      "pattern_id": "P001",
+      "name": "fin_tip_cold_chip_hot",
+      "symptoms": [
+        "chip_max_high",
+        "fin_tip_much_cooler_than_base"
+      ],
+      "recommended_actions": [
+        "increase_base_thickness_mm",
+        "improve_tim",
+        "check_contact_resistance"
+      ],
+      "source": "initial_engineering_placeholder",
+      "confidence": 0.5
+    }
+  ]
+}

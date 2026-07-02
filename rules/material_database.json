@@ -1,0 +1,62 @@
+{
+  "version": "2026-07-02.v1",
+  "materials": [
+    {
+      "name": "Aluminum 6063",
+      "aliases": [
+        "铝合金",
+        "aluminum alloy",
+        "aluminium",
+        "aluminum"
+      ],
+      "thermal_conductivity_w_mk": 201,
+      "density_kg_m3": 2700,
+      "specific_heat_j_kgk": 900,
+      "source": "internal_default_placeholder",
+      "requires_review": true
+    },
+    {
+      "name": "Copper C1100",
+      "aliases": [
+        "铜",
+        "copper"
+      ],
+      "thermal_conductivity_w_mk": 385,
+      "density_kg_m3": 8960,
+      "specific_heat_j_kgk": 385,
+      "source": "internal_default_placeholder",
+      "requires_review": true
+    },
+    {
+      "name": "Air",
+      "aliases": [
+        "空气",
+        "air"
+      ],
+      "thermal_conductivity_w_mk": 0.026,
+      "density_kg_m3": 1.184,
+      "specific_heat_j_kgk": 1006,
+      "source": "internal_default_placeholder",
+      "requires_review": false
+    },
+    {
+      "name": "TIM_3W_mK",
+      "aliases": [
+        "thermal pad",
+        "导热垫",
+        "tim"
+      ],
+      "thermal_conductivity_w_mk": 3.0,
+      "source": "internal_default_placeholder",
+      "requires_review": true
+    }
+  ],
+  "material_selection_rules": [
+    {
+      "if_customer_says": "铝合金",
+      "default_candidate": "Aluminum 6063",
+      "requires_review": true,
+      "reason": "客户未给具体牌号时只能选候选，不能当最终事实"
+    }
+  ]
+}

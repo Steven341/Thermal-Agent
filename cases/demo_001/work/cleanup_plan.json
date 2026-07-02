@@ -1,0 +1,58 @@
+{
+  "delete_parts": [
+    {
+      "name": "GB_M3_Screw",
+      "reason": "small or standard part",
+      "bbox_mm": [
+        1.8,
+        1.8,
+        4
+      ]
+    }
+  ],
+  "fill_holes": [
+    {
+      "hole_id": "H001",
+      "diameter_mm": 3.0,
+      "reason": "diameter below threshold"
+    },
+    {
+      "hole_id": "H002",
+      "diameter_mm": 4.5,
+      "reason": "diameter below threshold"
+    }
+  ],
+  "remove_fillets": [
+    {
+      "edge_id": "F001",
+      "radius_mm": 0.5,
+      "reason": "small fillet simplification"
+    },
+    {
+      "edge_id": "F002",
+      "radius_mm": 0.8,
+      "reason": "small fillet simplification"
+    }
+  ],
+  "keep_parts": [
+    {
+      "name": "Heatsink_Base",
+      "reason": "protected thermal part"
+    },
+    {
+      "name": "Fin_Array",
+      "reason": "protected thermal part"
+    },
+    {
+      "name": "Chip_Heat_Source",
+      "reason": "protected thermal part"
+    }
+  ],
+  "requires_approval": true,
+  "risk_level": "medium",
+  "review_checklist": [
+    "确认删除零件不是导热路径",
+    "确认填孔不会改变通风/定位/装配功能",
+    "确认去圆角不会破坏关键接触面"
+  ]
+}

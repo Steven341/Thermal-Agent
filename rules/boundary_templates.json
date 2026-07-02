@@ -1,0 +1,34 @@
+{
+  "version": "2026-07-02.v1",
+  "templates": {
+    "forced_air_single_heatsink": {
+      "description": "单热源 + 风冷散热器 + 稳态 CHT",
+      "required_inputs": [
+        "ambient_temperature_c",
+        "heat_source_power_w",
+        "inlet_velocity_m_s",
+        "max_allowed_temperature_c"
+      ],
+      "defaults": {
+        "ambient_temperature_c": 45,
+        "heat_source_power_w": 80,
+        "inlet_velocity_m_s": 2,
+        "max_allowed_temperature_c": 95
+      },
+      "required_named_selections": [
+        "inlet",
+        "outlet",
+        "chip_heat_source",
+        "heatsink",
+        "fluid_domain"
+      ],
+      "solver": "fluent_cht",
+      "boundary_conditions": {
+        "heat_source": "total_power",
+        "inlet": "velocity_inlet",
+        "outlet": "pressure_outlet"
+      },
+      "requires_review": true
+    }
+  }
+}

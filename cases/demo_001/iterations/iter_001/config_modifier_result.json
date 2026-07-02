@@ -1,0 +1,102 @@
+{
+  "status": "success",
+  "from_iteration": 0,
+  "to_iteration": 1,
+  "applied_changes": [
+    {
+      "parameter": "inlet_velocity_m_s",
+      "old_value": 2.0,
+      "new_value": 2.5,
+      "reason": "超温且压降低，先增加风速提升对流换热。",
+      "requires_geometry_change": false,
+      "requires_review": false,
+      "auto_apply": true
+    },
+    {
+      "parameter": "fin_height_mm",
+      "old_value": 18,
+      "new_value": 22,
+      "reason": "超温，增加鳍片高度提升散热面积。",
+      "requires_geometry_change": true,
+      "requires_review": true,
+      "auto_apply": false
+    }
+  ],
+  "new_config": {
+    "case_id": "demo_001",
+    "iteration_index": 1,
+    "solver": "fluent_cht",
+    "analysis_type": "steady_state",
+    "geometry_file": "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/work/clean_model.step",
+    "materials": {
+      "heatsink": {
+        "name": "Aluminum 6063",
+        "aliases": [
+          "铝合金",
+          "aluminum alloy",
+          "aluminium",
+          "aluminum"
+        ],
+        "thermal_conductivity_w_mk": 201,
+        "density_kg_m3": 2700,
+        "specific_heat_j_kgk": 900,
+        "source": "internal_default_placeholder",
+        "requires_review": true
+      },
+      "fluid": {
+        "name": "Air",
+        "aliases": [
+          "空气",
+          "air"
+        ],
+        "thermal_conductivity_w_mk": 0.026,
+        "density_kg_m3": 1.184,
+        "specific_heat_j_kgk": 1006,
+        "source": "internal_default_placeholder",
+        "requires_review": false
+      }
+    },
+    "boundary_conditions": {
+      "heat_source": {
+        "type": "total_power",
+        "power_w": 80.0,
+        "target_named_selection": "chip_heat_source"
+      },
+      "inlet": {
+        "type": "velocity_inlet",
+        "velocity_m_s": 2.5,
+        "temperature_c": 45.0,
+        "target_named_selection": "inlet"
+      },
+      "outlet": {
+        "type": "pressure_outlet",
+        "gauge_pressure_pa": 0,
+        "target_named_selection": "outlet"
+      }
+    },
+    "mesh_rules": {
+      "global_size_mm": 3.0,
+      "fin_local_size_mm": 0.6,
+      "heat_source_local_size_mm": 0.5,
+      "quality_thresholds": {
+        "minimum_orthogonal_quality": 0.1,
+        "maximum_skewness": 0.95,
+        "maximum_aspect_ratio": 100
+      }
+    },
+    "design_variables": {
+      "fin_height_mm": 22,
+      "fin_thickness_mm": 1.2,
+      "fin_spacing_mm": 1.5,
+      "base_thickness_mm": 5.0
+    },
+    "solver_settings": {
+      "max_iterations": 500,
+      "residual_target": 1e-05
+    },
+    "success_criteria": {
+      "max_temperature_c": 95.0
+    },
+    "requires_review": true
+  }
+}

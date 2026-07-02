@@ -1,0 +1,50 @@
+{
+  "version": "2026-07-02.v1",
+  "purpose": "模型减肥、填孔、去圆角的确定性规则",
+  "delete_if_bbox_all_less_than_mm": [
+    2,
+    2,
+    2
+  ],
+  "delete_if_name_contains": [
+    "GB",
+    "screw",
+    "bolt",
+    "washer",
+    "螺丝",
+    "标准件"
+  ],
+  "protected_name_keywords": [
+    "thermal",
+    "pad",
+    "chip",
+    "sink",
+    "heatsink",
+    "fin",
+    "pcb",
+    "copper",
+    "导热",
+    "热源",
+    "散热",
+    "鳍片",
+    "铜柱",
+    "导热垫"
+  ],
+  "holes": {
+    "fill_if_diameter_less_than_mm": 5,
+    "never_fill_if_name_contains": [
+      "vent",
+      "air",
+      "inlet",
+      "outlet",
+      "通风",
+      "风道",
+      "定位"
+    ]
+  },
+  "fillets": {
+    "remove_if_radius_less_equal_mm": 1.0,
+    "policy": "small_fillets_to_sharp_edges"
+  },
+  "requires_human_approval": true
+}

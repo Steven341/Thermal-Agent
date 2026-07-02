@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "checks": {
+    "clean_model_file_exists": true,
+    "watertight": true,
+    "self_intersections": 0,
+    "named_selections_missing": [],
+    "volume_change_ratio": 0.02
+  },
+  "recommended_next_tool": "build_simulation_config",
+  "requires_review": false
+}

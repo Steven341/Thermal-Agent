@@ -1,0 +1,32 @@
+{
+  "diagnosis": "design_failed_temperature_too_high",
+  "confidence": 0.65,
+  "changes": [
+    {
+      "parameter": "inlet_velocity_m_s",
+      "old_value": 2.0,
+      "new_value": 2.5,
+      "reason": "超温且压降低，先增加风速提升对流换热。",
+      "requires_geometry_change": false,
+      "requires_review": false,
+      "auto_apply": true
+    },
+    {
+      "parameter": "fin_height_mm",
+      "old_value": 18,
+      "new_value": 22,
+      "reason": "超温，增加鳍片高度提升散热面积。",
+      "requires_geometry_change": true,
+      "requires_review": true,
+      "auto_apply": false
+    }
+  ],
+  "risk_level": "medium",
+  "requires_review": true,
+  "expected_effect": {
+    "temperature_reduction_direction": "down",
+    "pressure_drop_direction": "up_or_same"
+  },
+  "recommended_next_tool": "apply_optimization_plan",
+  "rejected_changes": []
+}

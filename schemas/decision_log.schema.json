@@ -1,0 +1,8 @@
+{
+  "event_id": "string",
+  "timestamp": "string",
+  "case_id": "string",
+  "actor": "qwen | python | engineer | system",
+  "event_type": "tool_plan | approval | rejection | auto_decision | rule_update",
+  "payload": "object"
+}
