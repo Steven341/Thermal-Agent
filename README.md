@@ -1,39 +1,173 @@
 # thermal_agent_fde_v4_qwen_self_optimizing
 
-这一版补齐：
+基于 Qwen LLM 的电子设备热设计智能优化 Agent，支持自我迭代优化的完整闭环流程。
 
-1. `case_state.json`：case 状态机，支持当前阶段、迭代轮次、下一步工具。
-2. `decision_log.jsonl`：AI、Python、工程师审批、规则更新全部留痕。
-3. `optimization_rules.json`：定义 AI 能改哪些设计杠杆、范围、权限、风险。
-4. `geometry_health_rules.json` + `geometry_health_checker.py`：清理后健康检查，失败可回滚。
-5. `data/knowledge_db/`：经验数据库、相似案例检索、工程师反馈。
-6. `rule_miner.py` + `regression_runner.py`：外层自我迭代与规则回归测试骨架。
+## 核心特性
 
-## 运行
+### 1. Case 状态机 (`case_state.json`)
+- 追踪当前阶段（pipeline stage）
+- 记录迭代轮次（iteration index）
+- 指导下一步工具调用
+- 状态持久化到 `cases/<case_id>/state/`
+
+### 2. 决策日志 (`decision_log.jsonl`)
+- AI 决策留痕（Qwen 推理过程）
+- Python 工具执行记录
+- 工程师审批记录
+- 规则更新审计轨迹
+
+### 3. 优化规则体系 (`optimization_rules.json`)
+- 定义 AI 可修改的设计杠杆
+- 参数调整范围与权限控制
+- 风险等级评估（低/中/高）
+- 自动应用策略配置
+
+### 4. 几何健康检查
+- `geometry_health_rules.json`: 清理规则定义
+- `geometry_health_checker.py`: 清理后验证
+- 失败回滚机制
+- 支持 CAD/SpaceClaim 集成
+
+### 5. 知识库系统 (`data/knowledge_db/`)
+- `case_index.jsonl`: 相似案例检索
+- `experience_patterns.json`: 经验模式库
+- `engineer_feedback.jsonl`: 工程师反馈收集
+- `rule_change_log.jsonl`: 规则变更历史
+
+### 6. 自我优化闭环
+- **内层循环**: 单 case 多迭代优化
+- **外层循环**: 跨 case 规则挖掘与回归测试
+- `rule_miner.py`: 从反馈中挖掘规则候选
+- `regression_runner.py`: 规则变更前回归验证
+
+---
+
+## 项目结构
+
+```
+thermal_agent_fde_v4_qwen_self_optimizing/
+├── agent/                      # LLM 交互层
+│   ├── qwen_client.py         # Qwen API 客户端
+│   ├── prompts.py             # Prompt 模板
+│   └── schemas.py             # Pydantic 数据模型
+├── tools/                      # 工具函数库
+│   ├── case_manager.py        # Case 创建与管理
+│   ├── case_state.py          # 状态机操作
+│   ├── decision_logger.py     # 决策日志记录
+│   ├── geometry_*.py          # 几何检查/清理系列工具
+│   ├── simulation_config_builder.py  # 仿真配置生成
+│   ├── solver_worker*.py      # 求解器接口（Mock/Ansys）
+│   ├── optimization_*.py      # 优化计划生成与验证
+│   ├── config_modifier.py     # 配置文件修改器
+│   ├── result_evaluator.py    # 结果评估
+│   ├── report_generator.py    # Word 报告生成
+│   ├── rule_miner.py          # 规则挖掘
+│   └── regression_runner.py   # 回归测试
+├── workflow/                   # 工作流编排
+│   └── thermal_pipeline.py    # 主流程编排
+├── rules/                      # 规则配置文件
+│   ├── optimization_rules.json       # 优化规则
+│   ├── geometry_rules.json           # 几何规则
+│   ├── geometry_health_rules.json    # 几何健康检查规则
+│   ├── mesh_rules.json               # 网格规则
+│   ├── solver_rules.json             # 求解器规则
+│   ├── material_database.json        # 材料数据库
+│   ├── boundary_templates.json       # 边界条件模板
+│   ├── approval_policy.json          # 审批策略
+│   └── regression_policy.json        # 回归测试策略
+├── schemas/                    # JSON Schema 定义
+│   ├── case_state.schema.json
+│   ├── decision_log.schema.json
+│   ├── optimization_context.schema.json
+│   └── optimization_plan.schema.json
+├── data/knowledge_db/          # 知识库
+├── cases/                      # 案例目录
+│   └── demo_001/              # 示例案例
+│       ├── input/             # 输入几何/需求
+│       ├── work/              # 工作目录（配置文件）
+│       ├── mesh/              # 网格文件
+│       ├── results/           # 求解结果
+│       ├── iterations/        # 迭代历史
+│       ├── report/            # 生成报告
+│       └── state/             # 状态与日志
+├── app.py                      # FastAPI 服务入口
+├── run_pipeline.py             # 命令行运行脚本
+├── requirements.txt            # Python 依赖
+└── README.md                   # 本文档
+```
+
+---
+
+## 快速开始
+
+### 环境准备
 
 ```bash
 cd thermal_agent_fde_v4_qwen_self_optimizing
 python -m venv .venv
+
+# Windows
 .venv\Scripts\activate
+# Linux/Mac
+source .venv/bin/activate
+
 pip install -r requirements.txt
-copy .env.example .env
+```
+
+### 配置文件
+
+创建 `.env` 文件（参考下方配置项）：
+
+```bash
+# Windows
+echo DEMO_MODE=true > .env
+echo MOCK_ANSYS=true >> .env
+
+# Linux/Mac
+cat > .env << EOF
+DEMO_MODE=true
+MOCK_ANSYS=true
+EOF
+```
+
+### 运行 Demo
+
+```bash
 python run_pipeline.py
 ```
 
-默认：
-- `DEMO_MODE=true`
-- `MOCK_ANSYS=true`
+默认配置说明：
+- `DEMO_MODE=true`: 使用内置示例数据，无需外部输入
+- `MOCK_ANSYS=true`: 使用 Mock 求解器，无需安装 Ansys
 
-所以没有 Qwen key、没有 Ansys 也能跑通闭环。
+---
 
-## 真实 Ansys 部署替换点
+## 配置选项
 
-当前求解器通过 `tools/solver_worker.py` 统一入口选择后端：
+### 基础配置
 
-- `MOCK_ANSYS=true`：调用 `tools/solver_worker_mock.py`，用于本地 smoke test。
-- `MOCK_ANSYS=false`：调用 `tools/solver_worker_ansys.py`，把 `work/simulation_config_iterXXX.json` 交给真实 Ansys 自动化脚本。
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `DEMO_MODE` | `true` | 演示模式，使用示例数据 |
+| `MOCK_ANSYS` | `true` | Mock 求解器模式 |
+| `AUTO_APPLY_LOW_RISK_OPTIMIZATION` | `true` | 自动应用低风险优化 |
 
-真实环境需要在 `.env` 中配置：
+### Qwen API 配置
+
+编辑 `.env` 启用真实 LLM：
+
+```env
+DEMO_MODE=false
+QWEN_API_KEY=your_api_key_here
+QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+QWEN_MODEL=qwen-max
+```
+
+获取 API Key: https://dashscope.console.aliyun.com/
+
+### Ansys 求解器配置
+
+切换到真实 Ansys 求解器：
 
 ```env
 MOCK_ANSYS=false
@@ -41,75 +175,228 @@ ANSYS_SOLVER_COMMAND=/path/to/run_ansys_solver.py
 ANSYS_SOLVER_TIMEOUT_SECONDS=7200
 ```
 
-`ANSYS_SOLVER_COMMAND` 指向的脚本需要接收：
+`ANSYS_SOLVER_COMMAND` 指向的脚本需接收以下参数：
 
-```text
---project-root <repo>
+```bash
+--project-root <repo_root>
 --case-id <case_id>
 --iteration-index <i>
 --config <cases/<case_id>/work/simulation_config_iterXXX.json>
 --output <cases/<case_id>/results/solver_result_iterXXX.json>
 ```
 
-并输出与 `tools/solver_worker_mock.py` 相同结构的 `solver_result_iterXXX.json`，后续 `postprocess.py`、`result_evaluator.py`、`optimization_planner.py` 就能继续复用。
+输出格式需与 `tools/solver_worker_mock.py` 保持一致。
 
-注意：几何清理目前仍是受控规则计划 + mock 执行（复制 STEP），真实 CAD/SpaceClaim 清理应优先替换 `tools/geometry_cleanup_executor.py`；Ansys 网格/求解替换点是 `tools/solver_worker_ansys.py`。
+> **注意**: 
+> - 几何清理目前通过 `tools/geometry_cleanup_executor.py` 实现（Mock 模式为复制 STEP 文件）
+> - 真实 CAD 清理需替换该模块（如集成 SpaceClaim）
+> - Ansys 网格/求解替换点为 `tools/solver_worker_ansys.py`
 
-## 使用 Qwen API
+---
 
-编辑 `.env`：
+## API 服务
 
-```env
-DEMO_MODE=false
-QWEN_API_KEY=你的Qwen_API_Key
-QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-QWEN_MODEL=qwen-max
-```
-
-## API
+### 启动服务
 
 ```bash
 uvicorn app:app --reload --port 8000
 ```
 
-打开：
+### API 文档
 
-```text
-http://127.0.0.1:8000/docs
+访问：http://127.0.0.1:8000/docs
+
+### 主要接口
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| `GET` | `/` | 服务信息 |
+| `GET` | `/llm/test_qwen` | 测试 Qwen 连接 |
+| `POST` | `/cases/create` | 创建新案例 |
+| `GET` | `/cases/{case_id}/state` | 获取案例状态 |
+| `GET` | `/cases/{case_id}/decision_log` | 获取决策日志 |
+| `POST` | `/pipeline/run_self_optimizing` | 运行自优化流程 |
+| `POST` | `/feedback/engineer` | 提交工程师反馈 |
+| `POST` | `/rules/mine_feedback` | 从反馈挖掘规则 |
+| `POST` | `/regression/run` | 执行回归测试 |
+
+### 使用示例
+
+```bash
+# 创建案例
+curl -X POST http://localhost:8000/cases/create \
+  -H "Content-Type: application/json" \
+  -d '{"case_id": "my_project_001"}'
+
+# 运行优化流程
+curl -X POST http://localhost:8000/pipeline/run_self_optimizing \
+  -H "Content-Type: application/json" \
+  -d '{"case_id": "demo_001", "approved": true, "max_iterations": 5}'
+
+# 查看状态
+curl http://localhost:8000/cases/demo_001/state
 ```
 
-主要接口：
+---
 
-- `GET /llm/test_qwen`
-- `POST /pipeline/run_self_optimizing`
-- `GET /cases/{case_id}/state`
-- `GET /cases/{case_id}/decision_log`
-- `POST /feedback/engineer`
-- `POST /rules/mine_feedback`
-- `POST /regression/run`
+## 自我优化闭环详解
 
-## 自我优化闭环
+### 内层循环（单 Case 迭代优化）
 
-内层循环：
-
-```text
-result_summary.json
-→ evaluate_result
-→ optimization_context.json
-→ Qwen optimization_plan.json
-→ validate against optimization_rules.json
-→ config_modifier.py
-→ next iteration
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Iteration Loop (max_iterations)                            │
+│                                                             │
+│  result_summary.json                                        │
+│    ↓                                                        │
+│  evaluate_result → 评估当前设计性能                         │
+│    ↓                                                        │
+│  optimization_context.json → 构建优化上下文                 │
+│    ↓                                                        │
+│  Qwen LLM → optimization_plan.json → 生成优化计划           │
+│    ↓                                                        │
+│  validate against optimization_rules.json → 规则校验        │
+│    ↓                                                        │
+│  config_modifier.py → 修改仿真配置                          │
+│    ↓                                                        │
+│  build_simulation_config_iterXXX.json                       │
+│    ↓                                                        │
+│  run_solver → 执行仿真                                      │
+│    ↓                                                        │
+│  extract_results → 提取结果                                 │
+│    └─────────────────────────────────────────────────────────┘
 ```
 
-外层循环：
+### 外层循环（跨 Case 规则进化）
 
-```text
-engineer_feedback.jsonl
-→ rule_miner.py
-→ candidate_rule_updates.json
-→ 人工审查
-→ 修改 rules/*.json
-→ regression_runner.py
-→ 规则上线
 ```
+┌─────────────────────────────────────────────────────────────┐
+│  Rule Evolution Loop                                        │
+│                                                             │
+│  engineer_feedback.jsonl                                    │
+│    ↓                                                        │
+│  rule_miner.py → candidate_rule_updates.json → 挖掘候选规则 │
+│    ↓                                                        │
+│  人工审查批准                                              │
+│    ↓                                                        │
+│  修改 rules/*.json → 规则上线                               │
+│    ↓                                                        │
+│  regression_runner.py → 回归测试验证                        │
+│    ↓                                                        │
+│  确认无退化 → 规则固化                                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 规则体系说明
+
+### 优化规则 (`optimization_rules.json`)
+
+定义 AI 可执行的操作权限：
+
+```json
+{
+  "design_levers": [
+    {
+      "name": "fan_speed",
+      "type": "continuous",
+      "min": 0.5,
+      "max": 1.5,
+      "risk_level": "low",
+      "auto_apply": true
+    },
+    {
+      "name": "heatsink_fin_count",
+      "type": "integer",
+      "min": 10,
+      "max": 50,
+      "risk_level": "medium",
+      "auto_apply": false
+    }
+  ]
+}
+```
+
+### 几何规则 (`geometry_rules.json`)
+
+定义几何处理约束：
+
+- 最小特征尺寸
+- 允许简化类型
+- 保留区域定义
+
+### 健康检查规则 (`geometry_health_rules.json`)
+
+清理后验证标准：
+
+- 体积变化阈值
+- 关键特征完整性
+- 水密性检查
+
+---
+
+## 输出产物
+
+运行完成后，在 `cases/<case_id>/` 目录下生成：
+
+| 目录/文件 | 说明 |
+|-----------|------|
+| `state/case_state.json` | 最终状态快照 |
+| `state/decision_log.jsonl` | 完整决策日志 |
+| `report/report.docx` | Word 格式报告 |
+| `results/` | 各迭代结果文件 |
+| `iterations/iter_XXX/` | 详细迭代数据 |
+| `work/simulation_config_iterXXX.json` | 仿真配置历史 |
+
+---
+
+## 依赖说明
+
+```txt
+fastapi>=0.110.0        # Web 框架
+uvicorn>=0.27.0         # ASGI 服务器
+pydantic>=2.6.0         # 数据验证
+python-dotenv>=1.0.1    # 环境变量管理
+requests>=2.31.0        # HTTP 客户端
+python-docx>=1.1.0      # Word 报告生成
+matplotlib>=3.8.0       # 图表绘制
+numpy>=1.26.0           # 数值计算
+```
+
+---
+
+## 扩展开发
+
+### 添加新工具
+
+1. 在 `tools/` 目录创建新模块
+2. 实现统一接口：`func(project_root: Path, case_id: str, **kwargs) -> Dict`
+3. 在 `workflow/thermal_pipeline.py` 中集成
+
+### 自定义规则
+
+1. 参考 `rules/` 下现有规则格式
+2. 在 `optimization_rules.json` 中添加新 design lever
+3. 运行回归测试验证兼容性
+
+### 集成真实求解器
+
+1. 实现 `ANSYS_SOLVER_COMMAND` 指定脚本
+2. 确保输入输出格式与 Mock 版本一致
+3. 设置 `MOCK_ANSYS=false` 切换
+
+---
+
+## 版本历史
+
+- **V4**: 自我优化闭环、规则挖掘、回归测试
+- **V3**: 决策日志、状态机、规则校验
+- **V2**: 几何健康检查、知识库
+- **V1**: 基础流程框架
+
+---
+
+## License
+
+MIT
