@@ -8,11 +8,12 @@ from tools.io_utils import case_path, load_json, save_json
 def extract_results(project_root: Path, case_id: str, iteration_index: int) -> Dict[str, Any]:
     cp = case_path(project_root, case_id)
     iter_dir = cp / "iterations" / f"iter_{iteration_index:03d}"
+    iter_dir.mkdir(parents=True, exist_ok=True)
     result = load_json(iter_dir / "result_summary.json")
     if not result:
         solver = load_json(cp / "results" / f"solver_result_iter{iteration_index:03d}.json")
         config = load_json(iter_dir / "simulation_config.json")
-        monitors = solver.get("monitors", {})
+        monitors = solver.get("monitors", {}) if isinstance(solver.get("monitors", {}), dict) else {}
         result = {
             "status": solver.get("status", "unknown"),
             "iteration_index": iteration_index,
@@ -21,13 +22,19 @@ def extract_results(project_root: Path, case_id: str, iteration_index: int) -> D
             "avg_temperature_c": monitors.get("avg_temperature_c"),
             "pressure_drop_pa": monitors.get("pressure_drop_pa"),
             "target_max_temperature_c": config.get("convergence_criteria", {}).get("temperature_monitor_max", 95.0),
-            "mesh_quality": {"passed": True, "metrics": solver.get("mesh_info", {}).get("quality_metrics", {})},
+            "mesh_quality": {"passed": True, "metrics": solver.get("mesh_info", {}).get("quality_metrics", {}) if isinstance(solver.get("mesh_info", {}), dict) else {}},
+            "error": solver.get("error"),
         }
-        result["passed"] = (
-            result["converged"]
-            and result["max_temperature_c"] is not None
-            and result["max_temperature_c"] <= result["target_max_temperature_c"]
-        )
+        try:
+            result["passed"] = (
+                result["converged"]
+                and result["max_temperature_c"] is not None
+                and float(result["max_temperature_c"]) <= float(result["target_max_temperature_c"])
+            )
+        except (TypeError, ValueError):
+            result["passed"] = False
+            result["status"] = "failed"
+            result["error"] = result.get("error") or "invalid numeric solver output"
 
     img_dir = cp / "results"
     temp_png = img_dir / f"temperature_iter_{iteration_index:03d}.png"
@@ -43,7 +50,10 @@ def extract_results(project_root: Path, case_id: str, iteration_index: int) -> D
 
 
 def _plot_temperature(path: Path, result: Dict[str, Any]):
-    max_temp = float(result.get("max_temperature_c", 90))
+    try:
+        max_temp = float(result.get("max_temperature_c", 90) or 90)
+    except (TypeError, ValueError):
+        max_temp = 90.0
     x = np.linspace(-2, 2, 80)
     y = np.linspace(-2, 2, 80)
     X, Y = np.meshgrid(x, y)
