@@ -21,9 +21,9 @@ def execute_cleanup(project_root: Path, case_id: str, approved: bool, approver: 
         "status": "success",
         "clean_model_path": str(dst),
         "mock": True,
-        "deleted_parts_count": len(plan.get("delete_parts", [])),
-        "filled_holes_count": len(plan.get("fill_holes", [])),
-        "removed_fillets_count": len(plan.get("remove_fillets", []))
+        "deleted_parts_count": len(plan.get("parts_to_remove", plan.get("delete_parts", []))),
+        "filled_holes_count": len(plan.get("holes_to_fill", plan.get("fill_holes", []))),
+        "removed_fillets_count": len(plan.get("fillets_to_simplify", plan.get("remove_fillets", [])))
     }
     save_json(cp / "work" / "cleanup_result.json", result)
     add_approval(project_root, case_id, "execute_cleanup", "approved", approver)

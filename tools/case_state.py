@@ -78,3 +78,8 @@ def get_state(project_root: Path, case_id: str) -> Dict[str, Any]:
     cp = case_path(project_root, case_id)
     state_file = cp / "state" / "case_state.json"
     return load_json(state_file)
+
+
+def load_state(project_root: Path, case_id: str) -> Dict[str, Any]:
+    """兼容 API 层调用的状态读取函数。"""
+    return get_state(project_root, case_id)

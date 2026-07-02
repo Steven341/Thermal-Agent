@@ -4,7 +4,7 @@ import os
 
 from tools import case_manager, requirement_parser, geometry_inspector, geometry_cleanup_planner
 from tools import geometry_cleanup_executor, geometry_health_checker, simulation_config_builder
-from tools import solver_worker_mock, postprocess, result_evaluator
+from tools import solver_worker, postprocess, result_evaluator
 from tools import optimization_context_builder, optimization_planner, config_modifier, report_generator
 from tools.case_state import update_state
 
@@ -43,7 +43,7 @@ class ThermalPipeline:
             if i > 0:
                 steps.append({f"build_simulation_config_iter_{i:03d}": simulation_config_builder.build_simulation_config(self.project_root, case_id, iteration_index=i)})
             
-            steps.append({f"run_solver_iter_{i:03d}": solver_worker_mock.run_solver(self.project_root, case_id, iteration_index=i, approved=True)})
+            steps.append({f"run_solver_iter_{i:03d}": solver_worker.run_solver(self.project_root, case_id, iteration_index=i, approved=True)})
             steps.append({f"extract_results_iter_{i:03d}": postprocess.extract_results(self.project_root, case_id, iteration_index=i)})
             final_eval = result_evaluator.evaluate_result(self.project_root, case_id, iteration_index=i)
             steps.append({f"evaluate_result_iter_{i:03d}": final_eval})

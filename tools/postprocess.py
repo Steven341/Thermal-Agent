@@ -9,6 +9,25 @@ def extract_results(project_root: Path, case_id: str, iteration_index: int) -> D
     cp = case_path(project_root, case_id)
     iter_dir = cp / "iterations" / f"iter_{iteration_index:03d}"
     result = load_json(iter_dir / "result_summary.json")
+    if not result:
+        solver = load_json(cp / "results" / f"solver_result_iter{iteration_index:03d}.json")
+        config = load_json(iter_dir / "simulation_config.json")
+        monitors = solver.get("monitors", {})
+        result = {
+            "status": solver.get("status", "unknown"),
+            "iteration_index": iteration_index,
+            "converged": bool(solver.get("convergence_achieved")),
+            "max_temperature_c": monitors.get("max_temperature_c"),
+            "avg_temperature_c": monitors.get("avg_temperature_c"),
+            "pressure_drop_pa": monitors.get("pressure_drop_pa"),
+            "target_max_temperature_c": config.get("convergence_criteria", {}).get("temperature_monitor_max", 95.0),
+            "mesh_quality": {"passed": True, "metrics": solver.get("mesh_info", {}).get("quality_metrics", {})},
+        }
+        result["passed"] = (
+            result["converged"]
+            and result["max_temperature_c"] is not None
+            and result["max_temperature_c"] <= result["target_max_temperature_c"]
+        )
 
     img_dir = cp / "results"
     temp_png = img_dir / f"temperature_iter_{iteration_index:03d}.png"
