@@ -39,6 +39,10 @@ class ThermalPipeline:
         final_eval = None
 
         for i in range(max_iterations):
+            # 如果不是第一次迭代，需要为当前迭代构建配置
+            if i > 0:
+                steps.append({f"build_simulation_config_iter_{i:03d}": simulation_config_builder.build_simulation_config(self.project_root, case_id, iteration_index=i)})
+            
             steps.append({f"run_solver_iter_{i:03d}": solver_worker_mock.run_solver(self.project_root, case_id, iteration_index=i, approved=True)})
             steps.append({f"extract_results_iter_{i:03d}": postprocess.extract_results(self.project_root, case_id, iteration_index=i)})
             final_eval = result_evaluator.evaluate_result(self.project_root, case_id, iteration_index=i)

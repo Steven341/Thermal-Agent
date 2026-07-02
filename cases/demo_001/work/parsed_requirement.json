@@ -1,0 +1,24 @@
+{
+  "raw_text": "环境温度 45°C\n芯片功耗 80W\n入口风速 2m/s\n最高温度不能超过 95°C\n散热器材料铝合金\n",
+  "environment_temp_c": 45,
+  "chip_power_w": 80,
+  "inlet_velocity_m_s": 2.0,
+  "max_allowed_temp_c": 95,
+  "heatsink_material": "aluminum_6061",
+  "fluid_type": "air",
+  "gravity_enabled": false,
+  "radiation_enabled": true,
+  "turbulence_model": "k-epsilon",
+  "convergence_criteria": {
+    "energy_residual": 1e-06,
+    "velocity_residual": 0.0001,
+    "temperature_monitor_max": 95.0
+  },
+  "named_selections_required": [
+    "inlet",
+    "outlet",
+    "chip_heat_source",
+    "heatsink",
+    "fluid_domain"
+  ]
+}

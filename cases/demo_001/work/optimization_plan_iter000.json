@@ -1,0 +1,7 @@
+{
+  "plan_id": "demo_001_opt_000",
+  "status": "not_required",
+  "reason": "Temperature requirement already met",
+  "requires_review": false,
+  "suggestions": []
+}

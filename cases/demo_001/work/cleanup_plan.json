@@ -1,8 +1,27 @@
 {
-  "delete_parts": [
+  "plan_id": "demo_001_cleanup_001",
+  "rules_applied": [
     {
-      "name": "GB_M3_Screw",
-      "reason": "small or standard part",
+      "rule_id": "R001",
+      "description": "删除小于2x2x2mm的零件",
+      "type": "size_filter",
+      "params": {
+        "min_size_mm": 2.0
+      }
+    },
+    {
+      "rule_id": "R002",
+      "description": "删除名字带GB的标准件",
+      "type": "name_filter",
+      "params": {
+        "pattern": "GB"
+      }
+    }
+  ],
+  "parts_to_remove": [
+    {
+      "part_name": "GB_M3_Screw",
+      "reason": "standard_fastener",
       "bbox_mm": [
         1.8,
         1.8,
@@ -10,49 +29,28 @@
       ]
     }
   ],
-  "fill_holes": [
+  "holes_to_fill": [
     {
       "hole_id": "H001",
       "diameter_mm": 3.0,
-      "reason": "diameter below threshold"
+      "action": "fill"
     },
     {
       "hole_id": "H002",
       "diameter_mm": 4.5,
-      "reason": "diameter below threshold"
+      "action": "fill"
     }
   ],
-  "remove_fillets": [
+  "fillets_to_simplify": [
     {
       "edge_id": "F001",
       "radius_mm": 0.5,
-      "reason": "small fillet simplification"
+      "action": "convert_to_chamfer_or_remove"
     },
     {
       "edge_id": "F002",
       "radius_mm": 0.8,
-      "reason": "small fillet simplification"
+      "action": "convert_to_chamfer_or_remove"
     }
-  ],
-  "keep_parts": [
-    {
-      "name": "Heatsink_Base",
-      "reason": "protected thermal part"
-    },
-    {
-      "name": "Fin_Array",
-      "reason": "protected thermal part"
-    },
-    {
-      "name": "Chip_Heat_Source",
-      "reason": "protected thermal part"
-    }
-  ],
-  "requires_approval": true,
-  "risk_level": "medium",
-  "review_checklist": [
-    "确认删除零件不是导热路径",
-    "确认填孔不会改变通风/定位/装配功能",
-    "确认去圆角不会破坏关键接触面"
   ]
 }

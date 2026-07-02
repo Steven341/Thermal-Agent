@@ -1,0 +1,48 @@
+{
+  "status": "converged",
+  "iteration_index": 0,
+  "total_iterations": 100,
+  "computation_time_seconds": 45.3,
+  "mesh_info": {
+    "mesh_type": "polyhedral",
+    "cell_count": 600000,
+    "face_count": 3000000,
+    "node_count": 1200000,
+    "quality_metrics": {
+      "min_orthogonal_quality": 0.35,
+      "max_skewness": 0.72,
+      "aspect_ratio_max": 15.3
+    },
+    "boundary_layers": {
+      "layers": 5,
+      "first_height_mm": 0.1,
+      "growth_rate": 1.2
+    },
+    "refinement_regions": [
+      {
+        "name": "fin_region",
+        "max_size_mm": 0.5
+      },
+      {
+        "name": "wake_region",
+        "max_size_mm": 1.0
+      }
+    ]
+  },
+  "final_residuals": {
+    "continuity": 1e-06,
+    "x_velocity": 1e-05,
+    "y_velocity": 1e-05,
+    "z_velocity": 1e-05,
+    "energy": 1e-07,
+    "k_epsilon": 1e-05
+  },
+  "monitors": {
+    "max_temperature_c": 87.5,
+    "avg_temperature_c": 62.3,
+    "pressure_drop_pa": 125.4,
+    "mass_flow_rate_kg_s": 0.0034
+  },
+  "convergence_achieved": true,
+  "warnings": []
+}

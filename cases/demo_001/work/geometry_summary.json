@@ -1,5 +1,5 @@
 {
-  "model_path": "/mnt/data/thermal_agent_fde_v4_qwen_self_optimizing/cases/demo_001/input/model.step",
+  "model_path": "/workspace/cases/demo_001/input/model.step",
   "geometry_type": "plate_fin_heatsink_mock",
   "parts": [
     {
