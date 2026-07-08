@@ -50,8 +50,25 @@ def run_solver(project_root: Path, case_id: str, iteration_index: int = 0, appro
         "--config", str(config_file),
         "--output", str(output_file),
     ]
-    timeout = int(os.getenv("ANSYS_SOLVER_TIMEOUT_SECONDS", "7200"))
-    completed = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=timeout)
+    try:
+        timeout = int(os.getenv("ANSYS_SOLVER_TIMEOUT_SECONDS", "7200"))
+    except ValueError:
+        timeout = 7200
+    try:
+        completed = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired as exc:
+        failure = {
+            "status": "failed",
+            "iteration_index": iteration_index,
+            "error": f"Ansys solver timed out after {timeout} seconds",
+            "stdout": exc.stdout,
+            "stderr": exc.stderr,
+            "command": cmd,
+        }
+        save_json(output_file, failure)
+        update_state(project_root, case_id, current_stage=f"solver_timeout_iter{iteration_index:03d}", last_tool="run_solver")
+        log_decision(project_root, case_id, "solver", "simulation_timeout", failure)
+        return {"status": "failed", "result": failure, "path": str(output_file), "backend": "ansys"}
 
     if completed.returncode != 0:
         failure = {
@@ -67,7 +84,25 @@ def run_solver(project_root: Path, case_id: str, iteration_index: int = 0, appro
 
     solver_result = load_json(output_file)
     if not solver_result:
-        solver_result = json.loads(completed.stdout)
+        try:
+            solver_result = json.loads(completed.stdout)
+        except json.JSONDecodeError as exc:
+            failure = {
+                "status": "failed",
+                "iteration_index": iteration_index,
+                "error": f"Solver completed but did not write valid JSON output: {exc}",
+                "stdout": completed.stdout,
+                "stderr": completed.stderr,
+                "command": cmd,
+            }
+            save_json(output_file, failure)
+            update_state(project_root, case_id, current_stage=f"solver_invalid_output_iter{iteration_index:03d}", last_tool="run_solver")
+            log_decision(project_root, case_id, "solver", "simulation_invalid_output", failure)
+            return {"status": "failed", "result": failure, "path": str(output_file), "backend": "ansys"}
+        if not isinstance(solver_result, dict):
+            failure = {"status": "failed", "iteration_index": iteration_index, "error": "Solver JSON output must be an object", "command": cmd}
+            save_json(output_file, failure)
+            return {"status": "failed", "result": failure, "path": str(output_file), "backend": "ansys"}
         save_json(output_file, solver_result)
 
     update_state(project_root, case_id, current_stage=f"solver_completed_iter{iteration_index:03d}", last_tool="run_solver")

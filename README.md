@@ -194,6 +194,26 @@ ANSYS_SOLVER_TIMEOUT_SECONDS=7200
 
 ---
 
+
+### Ansys 真实接入后的准确性边界
+
+本项目可以校验真实 Ansys 自动化脚本是否按约定返回了可用结果，但**不能仅凭 Agent 流程保证物理仿真绝对准确**。真实准确性仍取决于几何清理是否保留关键流道/热接触、材料与边界条件是否来自工程输入、网格无关性是否通过、湍流/辐射/接触热阻等物理模型是否匹配场景，以及是否与实验、历史案例或手算基准完成相关性验证。
+
+当前代码新增了求解器结果质量门禁：后处理会检查必要监控量、收敛标志、最终残差、网格质量阈值以及可选的能量/质量不平衡指标。若真实 Ansys 输出缺少关键字段或数值不满足规则，Agent 会把该结果标记为不可直接采信，而不是继续当作准确结果优化。
+
+建议真实 Ansys 自动化脚本在 `solver_result_iterXXX.json` 中额外输出：
+
+```json
+{
+  "convergence_achieved": true,
+  "final_residuals": {"continuity": 1e-6, "energy": 1e-7},
+  "mesh_info": {"quality_metrics": {"min_orthogonal_quality": 0.35, "max_skewness": 0.72, "aspect_ratio_max": 15.3}},
+  "monitors": {"max_temperature_c": 87.5, "avg_temperature_c": 62.3, "pressure_drop_pa": 125.4, "energy_imbalance_percent": 1.2, "mass_imbalance_percent": 0.4}
+}
+```
+
+---
+
 ## API 服务
 
 ### 启动服务
@@ -335,6 +355,21 @@ curl http://localhost:8000/cases/demo_001/state
 - 水密性检查
 
 ---
+
+
+## 真实部署 Corner Cases 清单
+
+面向真实 AI Agent 自动化仿真流水线，除 Demo 闭环外建议重点处理以下场景：
+
+| 类别 | 需要防护的情况 | 当前防护/建议 |
+|------|----------------|---------------|
+| Case 输入 | API、队列或批处理传入 `../`、空字符串、超长 ID、跨平台非法文件名 | `case_id` 仅允许字母、数字、点、下划线、短横线，且必须以字母或数字开头 |
+| 文件状态 | JSON 文件为空、损坏或不是对象；JSONL 日志中夹杂坏行 | JSON 读取会给出明确错误；JSONL 读取会保留坏行诊断，不阻断 API 查看日志 |
+| 求解器集成 | 外部 Ansys 脚本超时、返回非零、未写结果、stdout 不是 JSON | 真实求解器适配层会持久化失败结果、更新状态并写决策日志 |
+| 结果后处理 | 求解器缺失温度、网格质量或监控字段；数值字段为字符串/空值 | 后处理和评估会降级为 `failed`、`invalid_result` 或 `missing_result`，避免 KeyError 中断流水线 |
+| 审批与风险 | 中高风险优化、真实 CAD 清理、真实求解资源消耗 | 保持审批门禁；生产环境建议接入 RBAC、配额和任务取消机制 |
+| 并发运行 | 同一 case 被多个请求同时运行 | 当前目录结构可持久化状态；生产建议增加 case 级锁或任务队列避免并发写冲突 |
+| 可观测性 | LLM 决策、工具输出、规则变更不可追溯 | `decision_log.jsonl` 和 `logs/global_decision_log.jsonl` 持续记录关键事件 |
 
 ## 输出产物
 

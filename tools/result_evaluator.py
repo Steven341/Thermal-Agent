@@ -9,13 +9,26 @@ def evaluate_result(project_root: Path, case_id: str, iteration_index: int) -> D
     cp = case_path(project_root, case_id)
     result = load_json(cp / "iterations" / f"iter_{iteration_index:03d}" / "result_summary.json")
 
-    if result.get("status") == "failed":
+    max_temperature = result.get("max_temperature_c")
+    target_temperature = result.get("target_max_temperature_c")
+    try:
+        temperature_exceeds_target = float(max_temperature) > float(target_temperature)
+    except (TypeError, ValueError):
+        temperature_exceeds_target = False
+
+    if not result:
+        evaluation = {"evaluation": "missing_result", "passed": False, "reason": "result summary is missing", "recommended_next_tool": "run_solver", "requires_review": True}
+    elif result.get("status") == "failed":
         evaluation = {"evaluation": "solver_failed", "passed": False, "reason": result.get("error", "solver failed"), "recommended_next_tool": "solver_log_parser", "requires_review": True}
     elif not result.get("mesh_quality", {}).get("passed", True):
         evaluation = {"evaluation": "bad_mesh", "passed": False, "reason": "mesh quality failed", "recommended_next_tool": "mesh_planner", "requires_review": True}
     elif not result.get("converged"):
         evaluation = {"evaluation": "not_converged", "passed": False, "reason": "not converged", "recommended_next_tool": "solver_settings_debugger", "requires_review": True}
-    elif result["max_temperature_c"] > result["target_max_temperature_c"]:
+    elif result.get("solver_validation", {}).get("status") == "failed":
+        evaluation = {"evaluation": "solver_validation_failed", "passed": False, "reason": "solver result failed quality gate", "solver_validation": result.get("solver_validation"), "recommended_next_tool": "solver_log_parser", "requires_review": True}
+    elif max_temperature is None or target_temperature is None:
+        evaluation = {"evaluation": "invalid_result", "passed": False, "reason": "missing temperature metrics", "recommended_next_tool": "solver_log_parser", "requires_review": True}
+    elif temperature_exceeds_target:
         evaluation = {
             "evaluation": "design_failed",
             "passed": False,
